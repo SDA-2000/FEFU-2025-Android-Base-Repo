@@ -1,6 +1,7 @@
 package co.feip.fefu2025
 
 import android.os.Bundle
+import android.widget.Button
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -12,36 +13,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import co.feip.fefu2025.ui.theme.FEFU2025AndroidBaseRepoTheme
+import androidx.appcompat.app.AppCompatActivity
+import android.graphics.Color
+import androidx.core.graphics.toColorInt
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity()
+{
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            FEFU2025AndroidBaseRepoTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "FEIP",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+        setContentView(R.layout.activity_main)
+
+        val addButton = findViewById<Button>(R.id.addButton)
+        val flexBoxLayout = findViewById<FlexBoxLayout>(R.id.flexLayout)
+
+        addButton.setOnClickListener{
+            val genreName = AnimeGenres.genres.random()
+            val color = Colors.colors.random().toColorInt()
+
+            val genreNameView = AnimeGenreView(this)
+            genreNameView.setGenreName(genreName)
+            genreNameView.setGenreBackgroundColor(color)
+            flexBoxLayout.addView(genreNameView)
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    FEFU2025AndroidBaseRepoTheme {
-        Greeting("Android")
     }
 }
