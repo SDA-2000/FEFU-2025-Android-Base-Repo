@@ -15,37 +15,34 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
-import coil.compose.AsyncImage
 
 @Composable
-fun AnimeCard(title: String, genre: String, imageUrl: String?, viewers: String) {
+fun AnimeCard(title: String, genres: List<String>, imageResId: Int, viewers: String, modifier: Modifier) {
     Card(
         shape = RoundedCornerShape(12.dp),
         modifier = Modifier
-            .width(180.dp)
+            .width(140.dp)
             .padding(8.dp)
     ) {
         Column(modifier = Modifier.background(Color.White)) {
-            if (imageUrl.isNullOrEmpty()) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic145488),
-                    contentDescription = title,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.height(220.dp).fillMaxWidth()
-                )
-            } else {
-                AsyncImage(
-                    model = imageUrl,
-                    contentDescription = title,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.height(220.dp).fillMaxWidth()
-                )
-            }
+            Image(
+                painter = painterResource(id = imageResId),
+                contentDescription = title,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.height(220.dp).fillMaxWidth()
+            )
 
             Column(modifier = Modifier.padding(8.dp)) {
                 Text(text = title, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.Black)
-                Text(text = genre, fontSize = 12.sp, color = Color.Gray)
+
+                Text(
+                    text = genres.joinToString(", "),
+                    fontSize = 12.sp,
+                    color = Color.Gray
+                )
+
                 Spacer(modifier = Modifier.height(4.dp))
+
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         painter = painterResource(id = android.R.drawable.star_big_on),
@@ -61,14 +58,14 @@ fun AnimeCard(title: String, genre: String, imageUrl: String?, viewers: String) 
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
 fun PreviewAnimeCard() {
     AnimeCard(
         title = "Карманы лета",
-        genre = "Повседневность",
-        imageUrl = "",
-        viewers = "8,47"
+        genres = listOf("Повседневность", "Романтика", "Мистика"),
+        imageResId = R.drawable.ic145488,
+        viewers = "8,47",
+        modifier = Modifier
     )
 }
