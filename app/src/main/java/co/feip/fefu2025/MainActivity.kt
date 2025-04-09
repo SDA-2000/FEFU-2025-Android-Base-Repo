@@ -63,13 +63,6 @@ fun MainScreen(counter: Int, onCounterChange: (Int) -> Unit) {
                 onCounterChange(count)
             }
         )
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = {
-            val intent = Intent(context, AnotherActivity::class.java)
-            context.startActivity(intent)
-        }) {
-            Text("Open Second Activity")
-        }
     }
 }
 

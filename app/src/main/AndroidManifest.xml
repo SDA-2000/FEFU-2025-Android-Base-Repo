@@ -26,11 +26,12 @@
         <activity android:name=".AnotherActivity"
             android:exported="true"
             android:icon="@mipmap/ic_launcher_second"
+            android:taskAffinity="com.mysuperapp.test"
             android:label="Another Activity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
-                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.LAUNCHER" />
                 <data android:scheme="mysuperapp" android:host="test" />
             </intent-filter>
             <intent-filter>
