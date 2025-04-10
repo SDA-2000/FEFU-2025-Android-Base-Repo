@@ -15,9 +15,8 @@ class MainActivity : AppCompatActivity()
         val flexBoxLayout = findViewById<FlexBoxLayout>(R.id.flexLayout)
 
         addButton.setOnClickListener{
-            val genreName = AnimeGenres.genres.random()
-            val color = Colors.colors.random().toColorInt()
-
+            val genreName = genreColors.keys.random()
+            val color = genreColors.values.random()
             val genreNameView = AnimeGenreView(this)
             genreNameView.setGenreName(genreName)
             genreNameView.setGenreBackgroundColor(color)

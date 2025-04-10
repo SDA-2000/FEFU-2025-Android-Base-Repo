@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.compose.ui.graphics.toArgb
-import androidx.core.content.ContextCompat
 
 class AnimeGenreView @JvmOverloads constructor(
     context: Context,
