@@ -1,12 +1,13 @@
 package co.feip.fefu2025
 
 import android.content.Context
-import android.graphics.Color
+import androidx.compose.ui.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.ContextCompat
 
 class AnimeGenreView @JvmOverloads constructor(
@@ -23,16 +24,20 @@ class AnimeGenreView @JvmOverloads constructor(
         tvGenreName = findViewById(R.id.genreNameView)
     }
 
-    fun setGenreName(name: String)
-    {
+    fun setGenreName(name: String) {
         tvGenreName.text = name
+        val genreColor = genreColors[name] ?: Color.Gray.toArgb()
+        setGenreBackgroundColor(genreColor)
     }
 
-    fun setGenreBackgroundColor(colorInt: Int)
-    {
-        val drawable = ContextCompat.getDrawable(context, R.drawable.anime_bg)?.mutate() as? GradientDrawable
-        drawable?.setColor(colorInt)
+    fun setGenreBackgroundColor(colorInt: Int) {
+        val drawable = background as? GradientDrawable ?: GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadius = 16f
+        }
+        drawable.setColor(colorInt)
         background = drawable
-        tvGenreName.setTextColor(Color.WHITE)
+        tvGenreName.setTextColor(Color.White.toArgb())
     }
 }
+
