@@ -1,4 +1,4 @@
-package co.feip.fefu2025
+package co.feip.fefu2025.presentation.details
 
 import android.content.Context
 import androidx.compose.ui.graphics.Color
@@ -8,6 +8,8 @@ import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.compose.ui.graphics.toArgb
+import co.feip.fefu2025.R
+import co.feip.fefu2025.data.genreColors
 
 class AnimeGenreView @JvmOverloads constructor(
     context: Context,

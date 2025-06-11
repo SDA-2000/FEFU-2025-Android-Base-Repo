@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <co.feip.fefu2025.FlexBoxLayout
+    <co.feip.fefu2025.presentation.details.utils.FlexBoxLayout
         android:id="@+id/flexLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
