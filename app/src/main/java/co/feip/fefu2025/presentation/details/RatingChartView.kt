@@ -1,4 +1,4 @@
-package co.feip.fefu2025
+package co.feip.fefu2025.presentation.details
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun RatingChart(ratings: Map<Int, Int>) {
+fun RatingChartView(ratings: Map<Int, Int>) {
     val maxRating = ratings.values.maxOrNull() ?: 1
     Row(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
         ratings.forEach { (score, count) ->
@@ -37,7 +37,7 @@ fun RatingChart(ratings: Map<Int, Int>) {
                             }
                         )
                 )
-                Text(text = score.toString(), fontSize = 12.sp)
+                Text(text = count.toString(), fontSize = 12.sp)
             }
             Spacer(modifier = Modifier.width(8.dp))
         }
@@ -61,5 +61,5 @@ fun RatingChartPrewiew()
         9 to 450,
         10 to 700
     )
-    RatingChart(ratings = sampleRatings)
+    RatingChartView(ratings = sampleRatings)
 }

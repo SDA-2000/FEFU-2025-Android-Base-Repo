@@ -1,4 +1,4 @@
-package co.feip.fefu2025
+package co.feip.fefu2025.data
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -6,7 +6,7 @@ import androidx.compose.ui.graphics.toArgb
 val genreColors = mapOf(
     "Экшен" to Color.Red.toArgb(),
     "Приключения" to Color.Blue.toArgb(),
-    "Комедия" to Color.Yellow.toArgb(),
+    "Комедия" to Color.Blue.toArgb(),
     "Драма" to Color.DarkGray.toArgb(),
     "Фэнтези" to Color.Magenta.toArgb(),
     "Ужасы" to Color.Black.toArgb(),
