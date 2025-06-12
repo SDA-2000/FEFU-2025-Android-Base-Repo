@@ -3,9 +3,13 @@ package co.feip.fefu2025.presentation.details
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.layout.ContentScale
@@ -14,14 +18,21 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.navigation.NavController
 import co.feip.fefu2025.presentation.details.utils.FlexBoxLayout
 import co.feip.fefu2025.R
 import co.feip.fefu2025.presentation.details.utils.isDrawableResourceValid
+import co.feip.fefu2025.presentation.recomendations.RecomendationsScreenViewModel
+import co.feip.fefu2025.presentation.recomendations.RecommendationsSectionView
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AnimeScreenView(
-    animeScreenViewModel: AnimeScreenViewModel, id : Int
+    animeScreenViewModel: AnimeScreenViewModel,
+    id: Int,
+    navController: NavController,
+    recommendationsScreenViewModel: RecomendationsScreenViewModel
 ) {
     var anime = animeScreenViewModel.LoadAnimeById(id)
     val context = LocalContext.current
@@ -32,8 +43,7 @@ fun AnimeScreenView(
     }
     else
     {
-        val imageResId = if (anime.ImageResId != null &&
-            isDrawableResourceValid(context, anime.ImageResId)) {
+        val imageResId = if (isDrawableResourceValid(context, anime.ImageResId)) {
             anime.ImageResId
         } else {
             R.drawable.here
@@ -45,12 +55,20 @@ fun AnimeScreenView(
             modifier = Modifier.fillMaxSize().padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            item { TopAppBar(
+                title = { Text(anime.name) },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigate("main") }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
+                    }
+                }
+            ) }
             item {
-                    Image(painter = painterResource(id = imageResId),
-                        contentDescription = anime.name,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.height(220.dp).fillMaxWidth()
-                    )
+                Image(painter = painterResource(id = imageResId),
+                    contentDescription = anime.name,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.height(220.dp).fillMaxWidth().clip(RoundedCornerShape(12.dp))
+                )
             }
             item {
                 Text(text = anime.name, fontSize = 20.sp, fontWeight = FontWeight.Bold)
@@ -84,7 +102,7 @@ fun AnimeScreenView(
                 Text(text = "Эпизодов: ${anime.Episodes}", fontSize = 16.sp)
             }
             item {
-                RecommendationsSectionView(recs)
+                RecommendationsSectionView(recs, navController, recommendationsScreenViewModel)
             }
         }
     }

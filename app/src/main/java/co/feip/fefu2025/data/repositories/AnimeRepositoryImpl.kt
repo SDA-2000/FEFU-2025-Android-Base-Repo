@@ -68,8 +68,7 @@ class AnimeRepositoryImpl @Inject constructor() : AnimeRepository  {
           6,
             "Пираты \" Чёрной Лагуны \"",
             listOf("Экшен", "Сейнен"),
-
-            R.drawable.black_lagoon,
+            R.drawable.black_lagoon, //Здесь данные специально поломаны для проверки работы вставки шаблонной картинки
             2006,
             "",
             24,

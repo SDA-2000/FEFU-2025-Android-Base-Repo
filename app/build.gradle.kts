@@ -66,4 +66,5 @@ dependencies {
     //implementation("com.squareup:javapoet:1.13.0")
     implementation("com.google.dagger:hilt-android:2.48")
     kapt("com.google.dagger:hilt-android-compiler:2.48")
+    implementation("androidx.navigation:navigation-compose:2.9.0")
 }
