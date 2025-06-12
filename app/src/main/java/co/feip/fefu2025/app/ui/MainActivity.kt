@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.rememberNavController
 import co.feip.fefu2025.presentation.details.AnimeScreenViewModel
 import co.feip.fefu2025.presentation.main.MainScreenViewModel
@@ -22,7 +23,17 @@ class MainActivity : AppCompatActivity()
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
+            var url = intent?.data
+            val animeId = url?.lastPathSegment?.toIntOrNull()
+
             MainNavigation(navController, mainScreenViewModel, animeScreenViewModel, recomendationsScreenViewModel)
+
+            LaunchedEffect(animeId) {
+                animeId?.let {
+                    navController.navigate("anime/$it")
+                }
+            }
         }
     }
 }
+

@@ -3,7 +3,6 @@ package co.feip.fefu2025.presentation.details
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -24,6 +23,7 @@ import co.feip.fefu2025.presentation.details.utils.FlexBoxLayout
 import co.feip.fefu2025.R
 import co.feip.fefu2025.presentation.details.utils.isDrawableResourceValid
 import co.feip.fefu2025.presentation.recomendations.RecomendationsScreenViewModel
+import co.feip.fefu2025.presentation.recomendations.RecommendationsSectionView
 
 
 @OptIn(ExperimentalMaterial3Api::class)

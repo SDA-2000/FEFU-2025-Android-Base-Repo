@@ -2,8 +2,11 @@ package co.feip.fefu2025.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import co.feip.fefu2025.presentation.details.AnimeScreenView
 import co.feip.fefu2025.presentation.details.AnimeScreenViewModel
 import co.feip.fefu2025.presentation.main.MainScreenView
@@ -27,8 +30,12 @@ fun MainNavigation(
             screen.view(navController, recommendationsScreenViewModel)
         }
 
-        composable("anime/{animeId}") { backStackEntry ->
-            val animeId = backStackEntry.arguments?.getString("animeId")?.toIntOrNull()
+        composable(
+            route = "anime/{animeId}",
+            arguments = listOf(navArgument("animeId") { type = NavType.IntType }),
+            deepLinks = listOf(navDeepLink { uriPattern = "mysuperapp://anime/{animeId}" })
+        ) { backStackEntry ->
+            val animeId = backStackEntry.arguments?.getInt("animeId")
             if (animeId != null) {
                 AnimeScreenView(animeScreenViewModel, animeId, navController, recommendationsScreenViewModel)
             }

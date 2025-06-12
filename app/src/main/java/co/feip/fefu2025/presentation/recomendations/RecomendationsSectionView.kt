@@ -1,4 +1,4 @@
-package co.feip.fefu2025.presentation.details
+package co.feip.fefu2025.presentation.recomendations
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -16,8 +16,6 @@ import co.feip.fefu2025.R
 import co.feip.fefu2025.presentation.main.AnimeCardView
 import co.feip.fefu2025.domain.entities.Anime
 import co.feip.fefu2025.presentation.details.utils.isDrawableResourceValid
-import co.feip.fefu2025.presentation.main.AnimeCardView
-import co.feip.fefu2025.presentation.recomendations.RecomendationsScreenViewModel
 
 
 @Composable
