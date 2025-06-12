@@ -2,6 +2,7 @@ package co.feip.fefu2025.presentation.main
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -18,32 +19,44 @@ import androidx.compose.ui.tooling.preview.Preview
 import co.feip.fefu2025.R
 
 @Composable
-fun AnimeCard(title: String, genres: List<String>, imageResId: Int, viewers: String, modifier: Modifier) {
+fun AnimeCardView(
+    id: Int,
+    title: String,
+    genres: List<String>,
+    imageResId: Int,
+    viewers: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
     Card(
         shape = RoundedCornerShape(12.dp),
-        modifier = Modifier
-            .width(140.dp)
-            .padding(8.dp)
+        modifier = modifier
+            .padding(8.dp),
+        onClick = onClick
     ) {
         Column(modifier = Modifier.background(Color.White)) {
             Image(
                 painter = painterResource(id = imageResId),
                 contentDescription = title,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.height(220.dp).fillMaxWidth()
+                modifier = Modifier
+                    .height(220.dp)
+                    .fillMaxWidth()
             )
 
             Column(modifier = Modifier.padding(8.dp)) {
-                Text(text = title, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.Black)
-
+                Text(
+                    text = title,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
                 Text(
                     text = genres.joinToString(", "),
                     fontSize = 12.sp,
                     color = Color.Gray
                 )
-
                 Spacer(modifier = Modifier.height(4.dp))
-
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         painter = painterResource(id = android.R.drawable.star_big_on),
@@ -52,21 +65,14 @@ fun AnimeCard(title: String, genres: List<String>, imageResId: Int, viewers: Str
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text(text = viewers, fontSize = 12.sp, color = Color.Black)
+                    Text(
+                        text = viewers,
+                        fontSize = 12.sp,
+                        color = Color.Black
+                    )
                 }
             }
         }
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewAnimeCard() {
-    AnimeCard(
-        title = "Карманы лета",
-        genres = listOf("Повседневность", "Романтика", "Мистика"),
-        imageResId = R.drawable.ic145488,
-        viewers = "8,47",
-        modifier = Modifier
-    )
-}

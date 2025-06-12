@@ -14,6 +14,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.navigation.NavController
 import co.feip.fefu2025.presentation.details.utils.FlexBoxLayout
 import co.feip.fefu2025.R
 import co.feip.fefu2025.presentation.details.utils.isDrawableResourceValid
@@ -21,7 +22,7 @@ import co.feip.fefu2025.presentation.details.utils.isDrawableResourceValid
 
 @Composable
 fun AnimeScreenView(
-    animeScreenViewModel: AnimeScreenViewModel, id : Int
+    animeScreenViewModel: AnimeScreenViewModel, id : Int, navController: NavController
 ) {
     var anime = animeScreenViewModel.LoadAnimeById(id)
     val context = LocalContext.current
@@ -32,8 +33,7 @@ fun AnimeScreenView(
     }
     else
     {
-        val imageResId = if (anime.ImageResId != null &&
-            isDrawableResourceValid(context, anime.ImageResId)) {
+        val imageResId = if (isDrawableResourceValid(context, anime.ImageResId)) {
             anime.ImageResId
         } else {
             R.drawable.here
@@ -84,7 +84,7 @@ fun AnimeScreenView(
                 Text(text = "Эпизодов: ${anime.Episodes}", fontSize = 16.sp)
             }
             item {
-                RecommendationsSectionView(recs)
+                RecommendationsSectionView(recs, navController)
             }
         }
     }

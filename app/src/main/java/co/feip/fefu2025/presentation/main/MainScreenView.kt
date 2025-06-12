@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import co.feip.fefu2025.R
 import co.feip.fefu2025.presentation.details.utils.isDrawableResourceValid
 
@@ -22,7 +23,7 @@ import co.feip.fefu2025.presentation.details.utils.isDrawableResourceValid
 class MainScreenView(private val mainScreenViewModel: MainScreenViewModel){
     private val animelist = mainScreenViewModel.GetAnimeList()
     @Composable
-    fun view()
+    fun view(navController: NavController)
     {
 
         val context = LocalContext.current
@@ -51,12 +52,16 @@ class MainScreenView(private val mainScreenViewModel: MainScreenViewModel){
                             R.drawable.here
                         }
 
-                        AnimeCard(
+                        AnimeCardView(
+                            id = it.id,
                             title = it.name,
                             genres = it.genres,
                             imageResId = validImageResId,
                             viewers = it.grade,
-                            modifier = Modifier
+                            modifier = Modifier,
+                            onClick = {
+                                navController.navigate("anime/${anime.id}")
+                            }
                         )
                 }
             }

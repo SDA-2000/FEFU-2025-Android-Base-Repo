@@ -10,14 +10,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import co.feip.fefu2025.R
-import co.feip.fefu2025.presentation.main.AnimeCard
+import co.feip.fefu2025.presentation.main.AnimeCardView
 import co.feip.fefu2025.domain.entities.Anime
 import co.feip.fefu2025.presentation.details.utils.isDrawableResourceValid
+import co.feip.fefu2025.presentation.main.AnimeCardView
 
 
 @Composable
-fun RecommendationsSectionView(recommendations: List<Anime?>) {
+fun RecommendationsSectionView(recommendations: List<Anime?>, navController: NavController) {
     val context = LocalContext.current
 
     Column(
@@ -40,12 +42,16 @@ fun RecommendationsSectionView(recommendations: List<Anime?>) {
                         R.drawable.here
                     }
 
-                    AnimeCard(
+                    AnimeCardView (
+                        id = it.id,
                         title = it.name,
                         genres = it.genres,
                         imageResId = validImageResId,
                         viewers = it.grade,
-                        modifier = Modifier.width(140.dp)
+                        modifier = Modifier.width(140.dp),
+                        onClick = {
+                            navController.navigate("anime/${anime.id}")
+                        }
                     )
                 }
             }
