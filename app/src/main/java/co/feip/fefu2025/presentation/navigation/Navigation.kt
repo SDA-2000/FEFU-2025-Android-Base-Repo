@@ -1,37 +1,44 @@
 package co.feip.fefu2025.presentation.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavController
-import androidx.navigation.NavHost
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import co.feip.fefu2025.presentation.details.AnimeScreenView
 import co.feip.fefu2025.presentation.details.AnimeScreenViewModel
 import co.feip.fefu2025.presentation.main.MainScreenView
 import co.feip.fefu2025.presentation.main.MainScreenViewModel
+import co.feip.fefu2025.presentation.recomendations.RecomendationsScreenViewModel
+import co.feip.fefu2025.presentation.recommendations.RecommendationsScreenView
 
 @Composable
 fun MainNavigation(
     navController: NavHostController,
     mainScreenViewModel: MainScreenViewModel,
-    animeScreenViewModel: AnimeScreenViewModel
+    animeScreenViewModel: AnimeScreenViewModel,
+    recommendationsScreenViewModel: RecomendationsScreenViewModel
 ) {
     NavHost(
         navController = navController,
-        startDestination = "animeList"
+        startDestination = "main"
     ) {
-        composable("animeList") {
+        composable("main") {
             val screen = MainScreenView(mainScreenViewModel)
-            screen.view(navController)
+            screen.view(navController, recommendationsScreenViewModel)
         }
 
         composable("anime/{animeId}") { backStackEntry ->
             val animeId = backStackEntry.arguments?.getString("animeId")?.toIntOrNull()
             if (animeId != null) {
-                AnimeScreenView(animeScreenViewModel, animeId, navController)
+                AnimeScreenView(animeScreenViewModel, animeId, navController, recommendationsScreenViewModel)
             }
+        }
+
+        composable("recommendations") {
+            RecommendationsScreenView(
+                navController = navController,
+                sharedViewModel = recommendationsScreenViewModel
+            )
         }
     }
 }

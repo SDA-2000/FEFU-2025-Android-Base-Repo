@@ -18,12 +18,16 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import co.feip.fefu2025.R
 import co.feip.fefu2025.presentation.details.utils.isDrawableResourceValid
+import co.feip.fefu2025.presentation.recomendations.RecomendationsScreenViewModel
 
 
 class MainScreenView(private val mainScreenViewModel: MainScreenViewModel){
     private val animelist = mainScreenViewModel.GetAnimeList()
     @Composable
-    fun view(navController: NavController)
+    fun view(
+        navController: NavController,
+        recommendationsScreenViewModel: RecomendationsScreenViewModel
+    )
     {
 
         val context = LocalContext.current

@@ -1,5 +1,6 @@
 package co.feip.fefu2025.presentation.details
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -16,10 +17,15 @@ import co.feip.fefu2025.presentation.main.AnimeCardView
 import co.feip.fefu2025.domain.entities.Anime
 import co.feip.fefu2025.presentation.details.utils.isDrawableResourceValid
 import co.feip.fefu2025.presentation.main.AnimeCardView
+import co.feip.fefu2025.presentation.recomendations.RecomendationsScreenViewModel
 
 
 @Composable
-fun RecommendationsSectionView(recommendations: List<Anime?>, navController: NavController) {
+fun RecommendationsSectionView(
+    recommendations: List<Anime?>,
+    navController: NavController,
+    recomendationsScreenViewModel: RecomendationsScreenViewModel
+) {
     val context = LocalContext.current
 
     Column(
@@ -30,7 +36,11 @@ fun RecommendationsSectionView(recommendations: List<Anime?>, navController: Nav
         Text(
             text = "Может понравиться",
             fontSize = 18.sp,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.clickable {
+                recomendationsScreenViewModel.setRecommendations(recommendations.filterNotNull())
+                navController.navigate("recommendations")
+            }
         )
 
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -42,7 +52,7 @@ fun RecommendationsSectionView(recommendations: List<Anime?>, navController: Nav
                         R.drawable.here
                     }
 
-                    AnimeCardView (
+                    AnimeCardView(
                         id = it.id,
                         title = it.name,
                         genres = it.genres,
@@ -58,6 +68,7 @@ fun RecommendationsSectionView(recommendations: List<Anime?>, navController: Nav
         }
     }
 }
+
 
 
 
