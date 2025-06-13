@@ -13,13 +13,16 @@ import co.feip.fefu2025.presentation.main.MainScreenView
 import co.feip.fefu2025.presentation.main.MainScreenViewModel
 import co.feip.fefu2025.presentation.recomendations.RecomendationsScreenViewModel
 import co.feip.fefu2025.presentation.recommendations.RecommendationsScreenView
+import co.feip.fefu2025.presentation.search.SearchScreenView
+import co.feip.fefu2025.presentation.search.SearchScreenViewModel
 
 @Composable
 fun MainNavigation(
     navController: NavHostController,
     mainScreenViewModel: MainScreenViewModel,
     animeScreenViewModel: AnimeScreenViewModel,
-    recommendationsScreenViewModel: RecomendationsScreenViewModel
+    recommendationsScreenViewModel: RecomendationsScreenViewModel,
+    searchScreenViewModel: SearchScreenViewModel
 ) {
     NavHost(
         navController = navController,
@@ -46,5 +49,10 @@ fun MainNavigation(
                 sharedViewModel = recommendationsScreenViewModel
             )
         }
+
+        composable("search") {
+            SearchScreenView(navController = navController, searchScreenViewModel)
+        }
+
     }
 }

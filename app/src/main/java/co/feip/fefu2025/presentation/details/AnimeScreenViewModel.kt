@@ -49,7 +49,7 @@ class AnimeScreenViewModel @Inject constructor(
                     anime.Recomendations.map { recId ->
                         async {
                             try {
-                                getAnimeByIdUseCase.exec(recId)
+                                getAnimeByIdUseCase.execFast(recId)
                             } catch (e: Exception) {
                                 null
                             }

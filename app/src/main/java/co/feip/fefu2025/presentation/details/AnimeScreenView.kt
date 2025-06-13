@@ -39,7 +39,6 @@ fun AnimeScreenView(
 ) {
     val context = LocalContext.current
     val animeState = animeScreenViewModel.animeState
-    val recsState = animeScreenViewModel.recsState
 
     LaunchedEffect(key1 = id) {
         animeScreenViewModel.loadAnimeData(id)
@@ -82,7 +81,7 @@ fun AnimeScreenView(
                     TopAppBar(
                         title = { Text(anime.name) },
                         navigationIcon = {
-                            IconButton(onClick = { navController.navigate("main") }) {
+                            IconButton(onClick = { navController.popBackStack() }) {
                                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
                             }
                         }

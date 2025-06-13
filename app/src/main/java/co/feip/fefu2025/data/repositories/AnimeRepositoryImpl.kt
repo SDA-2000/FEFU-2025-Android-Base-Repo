@@ -145,4 +145,12 @@ class AnimeRepositoryImpl @Inject constructor() : AnimeRepository  {
         if ((0..3).random() == 0) throw IOException("Ошибка загрузки аниме")
         return animeList.find { it.id == id }
     }
+
+    override suspend fun searchAnimeByName(query: String): List<Anime> {
+        delay(1000)
+        if (query.isBlank()) return emptyList()
+        return animeList.filter {
+            it.name.contains(query, ignoreCase = true)
+        }
+    }
 }

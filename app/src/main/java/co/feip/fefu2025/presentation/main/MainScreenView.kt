@@ -1,5 +1,6 @@
 package co.feip.fefu2025.presentation.main
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -48,10 +49,13 @@ fun MainScreenView(
             placeholder = { Text("Поиск аниме...") },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 16.dp),
-            shape = RoundedCornerShape(8.dp),
-            singleLine = true
+                .padding(bottom = 16.dp)
+                .clickable {
+                    navController.navigate("search")
+                },
+            enabled = false
         )
+
 
         when (state) {
             is UiState.Loading -> {
