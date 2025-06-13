@@ -5,7 +5,11 @@ import co.feip.fefu2025.domain.repositories.AnimeRepository
 import javax.inject.Inject
 
 class GetAnimeByIdUseCase @Inject constructor(private val animeRepository: AnimeRepository) {
-    fun exec(id: Int) : Anime?{
+    suspend fun exec(id: Int) : Anime?{
         return animeRepository.GetAnimeById(id)
+    }
+
+    suspend fun execFast(id : Int) : Anime? {
+        return animeRepository.GetAnimeByIdFast(id)
     }
 }

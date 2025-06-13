@@ -3,6 +3,8 @@ package co.feip.fefu2025.domain.repositories
 import co.feip.fefu2025.domain.entities.Anime
 
 interface AnimeRepository {
-    fun GetAnimeList() : List<Anime>
-    fun GetAnimeById(id: Int): Anime?
+     suspend fun GetAnimeList() : List<Anime>
+     suspend fun GetAnimeById(id: Int): Anime?
+     suspend fun GetAnimeByIdFast(id: Int): Anime?
+     suspend fun searchAnimeByName(query: String): List<Anime>
 }

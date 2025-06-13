@@ -3,6 +3,8 @@ package co.feip.fefu2025.data.repositories
 import co.feip.fefu2025.R
 import co.feip.fefu2025.domain.entities.Anime
 import co.feip.fefu2025.domain.repositories.AnimeRepository
+import kotlinx.coroutines.delay
+import java.io.IOException
 import javax.inject.Inject
 
 class AnimeRepositoryImpl @Inject constructor() : AnimeRepository  {
@@ -68,8 +70,8 @@ class AnimeRepositoryImpl @Inject constructor() : AnimeRepository  {
           6,
             "Пираты \" Чёрной Лагуны \"",
             listOf("Экшен", "Сейнен"),
-            R.drawable.black_lagoon, //Здесь данные специально поломаны для проверки работы вставки шаблонной картинки
             2006,
+            R.drawable.black_lagoon,
             "",
             24,
             mapOf(1 to 10, 2 to 5, 3 to 6, 4 to 8, 5 to 9, 6 to 5, 7 to 12, 8 to 22, 9 to 29, 10 to 38),
@@ -127,12 +129,28 @@ class AnimeRepositoryImpl @Inject constructor() : AnimeRepository  {
     )
 
 
-    override fun GetAnimeList() : List<Anime>
-    {
+    override suspend fun GetAnimeList(): List<Anime> {
+        delay(3000)
+        if ((0..3).random() == 0) throw IOException("Ошибка загрузки списка")
         return animeList
     }
 
-    override fun GetAnimeById(id: Int): Anime? {
+    override suspend fun GetAnimeById(id: Int): Anime? {
+        delay(250)
+        if ((0..3).random() == 0) throw IOException("Ошибка загрузки аниме")
         return animeList.find { it.id == id }
+    }
+
+    override suspend fun GetAnimeByIdFast(id: Int): Anime? {
+        if ((0..3).random() == 0) throw IOException("Ошибка загрузки аниме")
+        return animeList.find { it.id == id }
+    }
+
+    override suspend fun searchAnimeByName(query: String): List<Anime> {
+        delay(1000)
+        if (query.isBlank()) return emptyList()
+        return animeList.filter {
+            it.name.contains(query, ignoreCase = true)
+        }
     }
 }
