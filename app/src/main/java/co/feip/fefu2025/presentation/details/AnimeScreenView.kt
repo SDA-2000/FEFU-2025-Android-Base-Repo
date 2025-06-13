@@ -8,6 +8,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
@@ -34,45 +36,59 @@ fun AnimeScreenView(
     navController: NavController,
     recommendationsScreenViewModel: RecomendationsScreenViewModel
 ) {
-    var anime = animeScreenViewModel.LoadAnimeById(id)
     val context = LocalContext.current
+    val anime = animeScreenViewModel.anime
+    val recommendations = animeScreenViewModel.recommendations
+    val isLoading = animeScreenViewModel.isLoading
 
-    if(anime == null)
-    {
-        Text("Не найдено")
+    LaunchedEffect(key1 = id) {
+        animeScreenViewModel.loadAnimeData(id)
     }
-    else
-    {
+
+    if (isLoading) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+    } else if (anime == null) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text("Аниме не найдено")
+        }
+    } else {
         val imageResId = if (isDrawableResourceValid(context, anime.ImageResId)) {
             anime.ImageResId
         } else {
             R.drawable.here
         }
-        val rating = anime.grade
-        val recs = animeScreenViewModel.LoadRecsById(anime.Recomendations)
 
         LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(16.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            item { TopAppBar(
-                title = { Text(anime.name) },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigate("main") }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
-                    }
-                }
-            ) }
             item {
-                Image(painter = painterResource(id = imageResId),
-                    contentDescription = anime.name,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.height(220.dp).fillMaxWidth().clip(RoundedCornerShape(12.dp))
+                TopAppBar(
+                    title = { Text(anime.name) },
+                    navigationIcon = {
+                        IconButton(onClick = { navController.navigate("main") }) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
+                        }
+                    }
                 )
             }
             item {
-                Text(text = anime.name, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                Image(
+                    painter = painterResource(id = imageResId),
+                    contentDescription = anime.name,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .height(220.dp)
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                )
             }
+            item { Text(anime.name, fontSize = 20.sp, fontWeight = FontWeight.Bold) }
+
             item {
                 AndroidView(
                     factory = { context ->
@@ -88,24 +104,26 @@ fun AnimeScreenView(
                     modifier = Modifier.fillMaxWidth()
                 )
             }
+
             item {
-                anime.description?.let { Text(text = it, fontSize = 14.sp, textAlign = TextAlign.Justify) }
+                anime.description?.let {
+                    Text(text = it, fontSize = 14.sp, textAlign = TextAlign.Justify)
+                }
             }
+            item { Text("Рейтинг: ${anime.grade}", fontSize = 16.sp, fontWeight = FontWeight.Bold) }
+            item { RatingChartView(anime.RatingMap) }
             item {
-                Text(text = "Рейтинг: $rating", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                Text("Год выпуска: ${anime.year}", fontSize = 16.sp)
+                Text("Эпизодов: ${anime.Episodes}", fontSize = 16.sp)
             }
+
             item {
-                RatingChartView(anime.RatingMap)
-            }
-            item {
-                Text(text = "Год выпуска: ${anime.year}", fontSize = 16.sp)
-                Text(text = "Эпизодов: ${anime.Episodes}", fontSize = 16.sp)
-            }
-            item {
-                RecommendationsSectionView(recs, navController, recommendationsScreenViewModel)
+                RecommendationsSectionView(
+                    recommendations,
+                    navController,
+                    recommendationsScreenViewModel
+                )
             }
         }
     }
-
-
 }

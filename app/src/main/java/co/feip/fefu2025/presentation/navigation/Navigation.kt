@@ -26,8 +26,7 @@ fun MainNavigation(
         startDestination = "main"
     ) {
         composable("main") {
-            val screen = MainScreenView(mainScreenViewModel)
-            screen.view(navController, recommendationsScreenViewModel)
+            MainScreenView(mainScreenViewModel, navController, recommendationsScreenViewModel)
         }
 
         composable(
