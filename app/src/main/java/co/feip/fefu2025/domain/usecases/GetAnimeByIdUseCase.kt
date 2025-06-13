@@ -8,4 +8,8 @@ class GetAnimeByIdUseCase @Inject constructor(private val animeRepository: Anime
     suspend fun exec(id: Int) : Anime?{
         return animeRepository.GetAnimeById(id)
     }
+
+    suspend fun execFast(id : Int) : Anime? {
+        return animeRepository.GetAnimeByIdFast(id)
+    }
 }

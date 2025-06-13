@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.feip.fefu2025.domain.entities.Anime
 import co.feip.fefu2025.domain.usecases.GetAnimeListUseCase
+import co.feip.fefu2025.presentation.state.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -16,21 +17,23 @@ class MainScreenViewModel @Inject constructor(
     private val useCase: GetAnimeListUseCase
 ) : ViewModel() {
 
-    var animeList by mutableStateOf<List<Anime>>(emptyList())
-        private set
-
-    var isLoading by mutableStateOf(true)
+    var uiState by mutableStateOf<UiState<List<Anime>>>(UiState.Loading)
         private set
 
     init {
         loadAnimeList()
     }
 
-    private fun loadAnimeList() {
+    fun loadAnimeList() {
         viewModelScope.launch {
-            isLoading = true
-            animeList = useCase.exec()
-            isLoading = false
+            uiState = UiState.Loading
+            try {
+                val data = useCase.exec()
+                uiState = UiState.Success(data)
+            } catch (e: Exception) {
+                uiState = UiState.Error(e.message ?: "Неизвестная ошибка")
+            }
         }
     }
 }
+

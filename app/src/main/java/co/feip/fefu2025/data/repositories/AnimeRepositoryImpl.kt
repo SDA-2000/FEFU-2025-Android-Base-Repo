@@ -4,6 +4,7 @@ import co.feip.fefu2025.R
 import co.feip.fefu2025.domain.entities.Anime
 import co.feip.fefu2025.domain.repositories.AnimeRepository
 import kotlinx.coroutines.delay
+import java.io.IOException
 import javax.inject.Inject
 
 class AnimeRepositoryImpl @Inject constructor() : AnimeRepository  {
@@ -128,14 +129,20 @@ class AnimeRepositoryImpl @Inject constructor() : AnimeRepository  {
     )
 
 
-    override suspend fun GetAnimeList() : List<Anime>
-    {
-        delay(2000)
+    override suspend fun GetAnimeList(): List<Anime> {
+        delay(3000)
+        if ((0..3).random() == 0) throw IOException("Ошибка загрузки списка")
         return animeList
     }
 
     override suspend fun GetAnimeById(id: Int): Anime? {
-        delay(200)
+        delay(250)
+        if ((0..3).random() == 0) throw IOException("Ошибка загрузки аниме")
+        return animeList.find { it.id == id }
+    }
+
+    override suspend fun GetAnimeByIdFast(id: Int): Anime? {
+        if ((0..3).random() == 0) throw IOException("Ошибка загрузки аниме")
         return animeList.find { it.id == id }
     }
 }

@@ -26,6 +26,7 @@ import co.feip.fefu2025.R
 import co.feip.fefu2025.presentation.details.utils.isDrawableResourceValid
 import co.feip.fefu2025.presentation.recomendations.RecomendationsScreenViewModel
 import co.feip.fefu2025.presentation.recomendations.RecommendationsSectionView
+import co.feip.fefu2025.presentation.state.UiState
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,92 +38,114 @@ fun AnimeScreenView(
     recommendationsScreenViewModel: RecomendationsScreenViewModel
 ) {
     val context = LocalContext.current
-    val anime = animeScreenViewModel.anime
-    val recommendations = animeScreenViewModel.recommendations
-    val isLoading = animeScreenViewModel.isLoading
+    val animeState = animeScreenViewModel.animeState
+    val recsState = animeScreenViewModel.recsState
 
     LaunchedEffect(key1 = id) {
         animeScreenViewModel.loadAnimeData(id)
     }
 
-    if (isLoading) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
-    } else if (anime == null) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text("Аниме не найдено")
-        }
-    } else {
-        val imageResId = if (isDrawableResourceValid(context, anime.ImageResId)) {
-            anime.ImageResId
-        } else {
-            R.drawable.here
+    when (animeState) {
+        is UiState.Loading -> {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
         }
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            item {
-                TopAppBar(
-                    title = { Text(anime.name) },
-                    navigationIcon = {
-                        IconButton(onClick = { navController.navigate("main") }) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
-                        }
+        is UiState.Error -> {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("Ошибка: ${animeState.message}")
+                    Button(onClick = { animeScreenViewModel.retry(id) }) {
+                        Text("Повторить")
                     }
-                )
-            }
-            item {
-                Image(
-                    painter = painterResource(id = imageResId),
-                    contentDescription = anime.name,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .height(220.dp)
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp))
-                )
-            }
-            item { Text(anime.name, fontSize = 20.sp, fontWeight = FontWeight.Bold) }
-
-            item {
-                AndroidView(
-                    factory = { context ->
-                        FlexBoxLayout(context).apply {
-                            anime.genres.forEach { genre ->
-                                val genreView = AnimeGenreView(context).apply {
-                                    setGenreName(genre)
-                                }
-                                addView(genreView)
-                            }
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-
-            item {
-                anime.description?.let {
-                    Text(text = it, fontSize = 14.sp, textAlign = TextAlign.Justify)
                 }
             }
-            item { Text("Рейтинг: ${anime.grade}", fontSize = 16.sp, fontWeight = FontWeight.Bold) }
-            item { RatingChartView(anime.RatingMap) }
-            item {
-                Text("Год выпуска: ${anime.year}", fontSize = 16.sp)
-                Text("Эпизодов: ${anime.Episodes}", fontSize = 16.sp)
+        }
+
+        is UiState.Success -> {
+            val recs = animeScreenViewModel.recsState
+            val anime = animeState.data
+            val imageResId = if (isDrawableResourceValid(context, anime.ImageResId)) {
+                anime.ImageResId
+            } else {
+                R.drawable.here
             }
 
-            item {
-                RecommendationsSectionView(
-                    recommendations,
-                    navController,
-                    recommendationsScreenViewModel
-                )
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                item {
+                    TopAppBar(
+                        title = { Text(anime.name) },
+                        navigationIcon = {
+                            IconButton(onClick = { navController.navigate("main") }) {
+                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
+                            }
+                        }
+                    )
+                }
+
+                item {
+                    Image(
+                        painter = painterResource(id = imageResId),
+                        contentDescription = anime.name,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .height(220.dp)
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                    )
+                }
+
+                item { Text(anime.name, fontSize = 20.sp, fontWeight = FontWeight.Bold) }
+
+                item {
+                    AndroidView(
+                        factory = { context ->
+                            FlexBoxLayout(context).apply {
+                                anime.genres.forEach { genre ->
+                                    val genreView = AnimeGenreView(context).apply {
+                                        setGenreName(genre)
+                                    }
+                                    addView(genreView)
+                                }
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+                item {
+                    anime.description?.let {
+                        Text(it, fontSize = 14.sp, textAlign = TextAlign.Justify)
+                    }
+                }
+
+                item { Text("Рейтинг: ${anime.grade}", fontSize = 16.sp, fontWeight = FontWeight.Bold) }
+                item { RatingChartView(anime.RatingMap) }
+                item {
+                    Text("Год выпуска: ${anime.year}", fontSize = 16.sp)
+                    Text("Эпизодов: ${anime.Episodes}", fontSize = 16.sp)
+                }
+
+                item {
+                    if (recs.isEmpty()) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    } else {
+                        RecommendationsSectionView(recs, navController, recommendationsScreenViewModel)
+                    }
+                }
             }
         }
     }

@@ -9,7 +9,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.feip.fefu2025.domain.entities.Anime
 import co.feip.fefu2025.domain.usecases.GetAnimeByIdUseCase
+import co.feip.fefu2025.presentation.state.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,27 +22,55 @@ class AnimeScreenViewModel @Inject constructor(
     private val getAnimeByIdUseCase: GetAnimeByIdUseCase
 ) : ViewModel() {
 
-    var anime by mutableStateOf<Anime?>(null)
+    var animeState by mutableStateOf<UiState<Anime>>(UiState.Loading)
         private set
 
-    var recommendations by mutableStateOf<List<Anime>>(emptyList())
+    var recsState by mutableStateOf<List<Anime>>(emptyList())
         private set
 
-    var isLoading by mutableStateOf(true)
-        private set
+    private var currentAnimeId: Int? = null
 
     fun loadAnimeData(id: Int) {
+        currentAnimeId = id
+
         viewModelScope.launch {
-            isLoading = true
+            animeState = UiState.Loading
+            recsState = emptyList()
 
-            anime = getAnimeByIdUseCase.exec(id)
+            try {
+                val anime = getAnimeByIdUseCase.exec(id)
+                    ?: throw Exception("Аниме не найдено")
 
-            val recIds = anime?.Recomendations ?: emptyList()
-            recommendations = recIds.mapNotNull { recId ->
-                getAnimeByIdUseCase.exec(recId)
+                if (currentAnimeId != id) return@launch
+
+                animeState = UiState.Success(anime)
+
+                val recs = coroutineScope {
+                    anime.Recomendations.map { recId ->
+                        async {
+                            try {
+                                getAnimeByIdUseCase.exec(recId)
+                            } catch (e: Exception) {
+                                null
+                            }
+                        }
+                    }.awaitAll().filterNotNull()
+                }
+
+
+                if (currentAnimeId == id) {
+                    recsState = recs
+                }
+
+            } catch (e: Exception) {
+                if (currentAnimeId == id) {
+                    animeState = UiState.Error(e.message ?: "Ошибка")
+                }
             }
-
-            isLoading = false
         }
+    }
+
+    fun retry(id: Int) {
+        loadAnimeData(id)
     }
 }
