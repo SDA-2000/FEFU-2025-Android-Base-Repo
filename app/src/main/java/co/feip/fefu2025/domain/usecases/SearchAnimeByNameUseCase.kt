@@ -5,7 +5,7 @@ import co.feip.fefu2025.domain.repositories.AnimeRepository
 import javax.inject.Inject
 
 class SearchAnimeByNameUseCase @Inject constructor(private val animeRepository: AnimeRepository) {
-    suspend fun exec(query: String): List<Anime> {
-        return animeRepository.searchAnimeByName(query)
+    suspend fun exec(query: String, page: Int): List<Anime> {
+        return animeRepository.searchAnimeByName(query, page, limit = 20)
     }
 }

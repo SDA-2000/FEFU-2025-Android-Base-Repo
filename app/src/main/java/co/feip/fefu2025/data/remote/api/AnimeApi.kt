@@ -10,7 +10,8 @@ import retrofit2.http.Query
 
 interface AnimeApi {
     @GET("anime")
-    suspend fun getAnimeList(@Query("q") query: String? = null) : JikanResponse<AnimeDto>
+    suspend fun getAnimeList(@Query("q") query: String? = null, @Query("page") page: Int = 1,
+                             @Query("limit") limit: Int = 10) : JikanResponse<AnimeDto>
 
     @GET("anime/{id}")
     suspend fun getAnimeById(@Path("id") id: Int?): JikanSingleResponse<AnimeDto>

@@ -34,6 +34,7 @@ fun AnimeScreenView(
     recommendationsScreenViewModel: RecomendationsScreenViewModel
 ) {
     val animeState = animeScreenViewModel.animeState
+    val recsState = animeScreenViewModel.recsState
 
     LaunchedEffect(key1 = id) {
         animeScreenViewModel.loadAnimeData(id)
@@ -139,7 +140,7 @@ fun AnimeScreenView(
                             CircularProgressIndicator()
                         }
                     } else {
-                        RecommendationsSectionView(recs, navController, recommendationsScreenViewModel)
+                        RecommendationsSectionView(recsState, navController, id)
                     }
                 }
             }

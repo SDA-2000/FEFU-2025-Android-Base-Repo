@@ -8,7 +8,10 @@ import javax.inject.Inject
 class GetAnimeListUseCase @Inject constructor(private val animeRepository: AnimeRepository) {
     suspend fun exec(): List<Anime>
     {
-        val animelist = animeRepository.GetAnimeList()
-        return animelist
+        return animeRepository.GetAnimeList()
+    }
+
+    suspend fun exec(page: Int, limit: Int) : List<Anime>{
+        return animeRepository.GetAnimeList(page, limit)
     }
 }

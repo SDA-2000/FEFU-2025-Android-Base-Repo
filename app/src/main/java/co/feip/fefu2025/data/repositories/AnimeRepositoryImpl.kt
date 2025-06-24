@@ -8,8 +8,13 @@ import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 class AnimeRepositoryImpl @Inject constructor( private val api: AnimeApi) : AnimeRepository  {
+
     override suspend fun GetAnimeList(): List<Anime> {
-        return api.getAnimeList().data.map { it.toDomain()}
+        return api.getAnimeList().data.map {it.toDomain()}
+    }
+
+    override suspend fun GetAnimeList(page: Int, limit: Int): List<Anime> {
+        return api.getAnimeList(page = page, limit = limit).data.map { it.toDomain()}
     }
 
     override suspend fun GetAnimeById(id: Int?): Anime {
@@ -18,12 +23,12 @@ class AnimeRepositoryImpl @Inject constructor( private val api: AnimeApi) : Anim
     }
 
     override suspend fun GetRecommendationById(id: Int?): Anime {
-        delay(670)
+        delay(1000)
         return api.getAnimeById(id).data.toDomain(emptyList())
     }
 
-    override suspend fun searchAnimeByName(query: String): List<Anime> {
-        return api.getAnimeList(query).data.map {it.toDomain()}
+    override suspend fun searchAnimeByName(query: String, page: Int, limit: Int): List<Anime> {
+        return api.getAnimeList(query, page, limit).data.map {it.toDomain()}
     }
 
     override suspend fun getRecommendations(id: Int?): List<Int> {

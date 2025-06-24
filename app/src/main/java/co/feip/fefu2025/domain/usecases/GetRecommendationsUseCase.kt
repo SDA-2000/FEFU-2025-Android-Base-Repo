@@ -8,14 +8,12 @@ class GetRecommendationsUseCase @Inject constructor(
     private val repository: AnimeRepository,
     private val getRecommendationByIdUseCase: GetRecommendationByIdUseCase
 ) {
-    suspend fun exec(id: Int): List<Anime> {
-        val recsIds = repository.getRecommendations(id).take(10)
-        val animeList = mutableListOf<Anime>()
+    suspend fun exec(id: Int?, page: Int = 1, pageSize: Int = 10): List<Anime> {
+        val recsIds = repository.getRecommendations(id)
+        val paginatedIds = recsIds.drop((page - 1) * pageSize).take(pageSize)
 
-        for(recId in recsIds){
-            val anime = getRecommendationByIdUseCase.exec(recId)
-            animeList.add(anime)
+        return paginatedIds.map { recId ->
+            getRecommendationByIdUseCase.exec(recId)
         }
-        return animeList
     }
 }

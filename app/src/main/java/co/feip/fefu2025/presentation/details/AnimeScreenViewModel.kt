@@ -10,9 +10,6 @@ import co.feip.fefu2025.domain.usecases.GetAnimeByIdUseCase
 import co.feip.fefu2025.domain.usecases.GetRecommendationsUseCase
 import co.feip.fefu2025.presentation.state.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

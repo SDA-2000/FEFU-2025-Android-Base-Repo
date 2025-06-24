@@ -6,9 +6,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -18,16 +16,11 @@ import co.feip.fefu2025.presentation.main.AnimeCardView
 
 
 @Composable
-fun RecommendationsSectionView(recommendations : List<Anime>,
+fun RecommendationsSectionView(
+    recommendations: List<Anime>,
     navController: NavController,
-    recomendationsScreenViewModel: RecomendationsScreenViewModel
+    animeId: Int?
 ) {
-    val context = LocalContext.current
-
-    LaunchedEffect(Unit) {
-        recomendationsScreenViewModel.setRecs(recommendations)
-    }
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -38,14 +31,14 @@ fun RecommendationsSectionView(recommendations : List<Anime>,
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.clickable {
-                navController.navigate("recommendations")
+                navController.navigate("recommendations/$animeId")
             }
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(recommendations) { anime ->
+            items(recommendations.take(10)) { anime ->
                 AnimeCardView(
                     id = anime.id,
                     title = anime.name,

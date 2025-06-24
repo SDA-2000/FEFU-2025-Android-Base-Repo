@@ -1,4 +1,4 @@
-package co.feip.fefu2025.presentation.recommendations
+package co.feip.fefu2025.presentation.recomendations
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.*
@@ -10,15 +10,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import co.feip.fefu2025.presentation.main.AnimeCardView
-import co.feip.fefu2025.presentation.recomendations.RecomendationsScreenViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecommendationsScreenView(
     navController: NavController,
-    sharedViewModel: RecomendationsScreenViewModel
+    sharedViewModel: RecomendationsScreenViewModel,
+    animeId: Int
 ) {
-    val recommendations = sharedViewModel.getRecs()
+    val recommendations by sharedViewModel.recs
+
+    LaunchedEffect(animeId) {
+        sharedViewModel.loadInitial(animeId)
+    }
 
     Scaffold(
         topBar = {
@@ -51,6 +55,12 @@ fun RecommendationsScreenView(
                         navController.navigate("anime/${anime.id}")
                     }
                 )
+            }
+
+            item {
+                LaunchedEffect(Unit) {
+                    sharedViewModel.loadNextPage()
+                }
             }
         }
     }

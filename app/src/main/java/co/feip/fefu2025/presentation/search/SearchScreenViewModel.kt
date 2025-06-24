@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.feip.fefu2025.domain.entities.Anime
 import co.feip.fefu2025.domain.usecases.SearchAnimeByNameUseCase
 import co.feip.fefu2025.presentation.state.SearchUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +19,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 @HiltViewModel
 class SearchScreenViewModel @Inject constructor(
     private val searchAnimeByNameUseCase: SearchAnimeByNameUseCase
@@ -29,6 +29,15 @@ class SearchScreenViewModel @Inject constructor(
 
     var searchState by mutableStateOf<SearchUiState>(SearchUiState.Idle)
         private set
+
+    private var currentPage = 1
+    private var isLoadingMore = false
+    private var hasMore = true
+    private var lastQuery = ""
+    private val loadedResults = mutableListOf<Anime>()
+
+    fun getIsLoadingMore(): Boolean = isLoadingMore
+    fun getHasMore(): Boolean = hasMore
 
     init {
         observeSearchQuery()
@@ -49,22 +58,75 @@ class SearchScreenViewModel @Inject constructor(
                         return@collectLatest
                     }
 
-                    searchState = SearchUiState.Loading
-                    try {
-                        val result = searchAnimeByNameUseCase.exec(query)
-                        searchState = if (result.isEmpty()) {
-                            SearchUiState.Empty
-                        } else {
-                            SearchUiState.Success(result)
-                        }
-                    } catch (e: Exception) {
-                        searchState = SearchUiState.Error(e.message ?: "Ошибка поиска")
-                    }
+                    search(query, reset = true)
                 }
         }
     }
+
+    private suspend fun search(query: String, reset: Boolean = true) {
+        if (query.isBlank()) return
+
+        if (reset) {
+            currentPage = 1
+            loadedResults.clear()
+            hasMore = true
+        }
+
+        try {
+            val result = searchAnimeByNameUseCase.exec(query, currentPage)
+
+            if (result.isNotEmpty()) {
+                currentPage++
+
+                val newResults = result.filterNot { newItem ->
+                    loadedResults.any { it.id == newItem.id }
+                }
+
+                loadedResults.addAll(newResults)
+                hasMore = newResults.isNotEmpty()
+
+                searchState = SearchUiState.Success(loadedResults.toList())
+            } else {
+                hasMore = false
+                if (loadedResults.isEmpty()) {
+                    searchState = SearchUiState.Empty
+                }
+            }
+
+            lastQuery = query
+        } catch (e: Exception) {
+            searchState = SearchUiState.Error(e.message ?: "Ошибка поиска")
+        }
+    }
+
+
+    fun loadNextPage() {
+        if (isLoadingMore || !hasMore) return
+
+        isLoadingMore = true
+        viewModelScope.launch {
+            try {
+                search(lastQuery, reset = false)
+            } finally {
+                isLoadingMore = false
+            }
+        }
+    }
+
     fun retry() {
-        onSearchQueryChanged(_searchQuery.value)
+        viewModelScope.launch {
+            search(lastQuery, reset = true)
+        }
+    }
+
+    fun clearSearch() {
+        _searchQuery.value = ""
+        searchState = SearchUiState.Idle
+        currentPage = 1
+        hasMore = true
+        isLoadingMore = false
+        lastQuery = ""
+        loadedResults.clear()
     }
 }
 
