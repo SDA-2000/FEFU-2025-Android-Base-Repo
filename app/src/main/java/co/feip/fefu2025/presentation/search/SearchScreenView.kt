@@ -95,8 +95,8 @@ fun SearchScreenView(
                             id = anime.id,
                             title = anime.name,
                             genres = anime.genres,
-                            imageResId = anime.ImageResId,
-                            viewers = anime.grade,
+                            viewers = anime.score.toString(),
+                            imageUrl = anime.imageUrl,
                             modifier = Modifier,
                             onClick = {
                                 navController.navigate("anime/${anime.id}")

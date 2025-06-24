@@ -33,13 +33,14 @@ fun MainNavigation(
         }
 
         composable(
-            route = "anime/{animeId}",
-            arguments = listOf(navArgument("animeId") { type = NavType.IntType }),
-            deepLinks = listOf(navDeepLink { uriPattern = "mysuperapp://anime/{animeId}" })
+            route = "anime/{id}",
+            arguments = listOf(navArgument("id") { type = NavType.IntType }),
+            deepLinks = listOf(navDeepLink { uriPattern = "mysuperapp://anime/{id}" })
         ) { backStackEntry ->
-            val animeId = backStackEntry.arguments?.getInt("animeId")
-            if (animeId != null) {
-                AnimeScreenView(animeScreenViewModel, animeId, navController, recommendationsScreenViewModel)
+            val animeId = backStackEntry.arguments?.getInt("id")
+            if (animeId != -1) {
+                AnimeScreenView(animeScreenViewModel,
+                    animeId, navController, recommendationsScreenViewModel)
             }
         }
 

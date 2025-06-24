@@ -1,8 +1,6 @@
 package co.feip.fefu2025.presentation.main
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -15,28 +13,26 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.tooling.preview.Preview
-import co.feip.fefu2025.R
+import coil.compose.AsyncImage
 
 @Composable
 fun AnimeCardView(
     id: Int,
     title: String,
     genres: List<String>,
-    imageResId: Int,
+    imageUrl: String,
     viewers: String,
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
     Card(
         shape = RoundedCornerShape(12.dp),
-        modifier = modifier
-            .padding(8.dp),
+        modifier = modifier.padding(8.dp),
         onClick = onClick
     ) {
         Column(modifier = Modifier.background(Color.White)) {
-            Image(
-                painter = painterResource(id = imageResId),
+            AsyncImage(
+                model = imageUrl,
                 contentDescription = title,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -75,4 +71,5 @@ fun AnimeCardView(
         }
     }
 }
+
 

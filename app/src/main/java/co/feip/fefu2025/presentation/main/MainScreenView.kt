@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
@@ -36,7 +35,6 @@ fun MainScreenView(
     recommendationsScreenViewModel: RecomendationsScreenViewModel
 ) {
     val state = viewModel.uiState
-    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -55,7 +53,6 @@ fun MainScreenView(
                 },
             enabled = false
         )
-
 
         when (state) {
             is UiState.Loading -> {
@@ -83,19 +80,12 @@ fun MainScreenView(
                     contentPadding = PaddingValues(4.dp)
                 ) {
                     items(state.data) { anime ->
-                        val validImageResId = if (isDrawableResourceValid(context, anime.ImageResId)) {
-                            anime.ImageResId
-                        } else {
-                            R.drawable.here
-                        }
-
                         AnimeCardView(
                             id = anime.id,
                             title = anime.name,
                             genres = anime.genres,
-                            imageResId = validImageResId,
-                            viewers = anime.grade,
-                            modifier = Modifier,
+                            imageUrl = anime.imageUrl,
+                            viewers = anime.score.toString(),
                             onClick = {
                                 navController.navigate("anime/${anime.id}")
                             }
