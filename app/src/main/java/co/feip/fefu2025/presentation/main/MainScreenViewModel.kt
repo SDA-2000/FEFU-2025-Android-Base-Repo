@@ -2,7 +2,6 @@ package co.feip.fefu2025.presentation.main
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.feip.fefu2025.domain.entities.Anime
@@ -11,29 +10,56 @@ import co.feip.fefu2025.presentation.state.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import androidx.compose.runtime.State
+
+
 
 @HiltViewModel
 class MainScreenViewModel @Inject constructor(
     private val useCase: GetAnimeListUseCase
 ) : ViewModel() {
 
-    var uiState by mutableStateOf<UiState<List<Anime>>>(UiState.Loading)
-        private set
+    private var currentPage = 1
+    private var endReached = false
+    private var isLoading = false
+
+    private val _uiState = mutableStateOf<UiState<List<Anime>>>(UiState.Loading)
+    val uiState: State<UiState<List<Anime>>> get() = _uiState
+
+    private var cachedList = mutableListOf<Anime>()
 
     init {
-        loadAnimeList()
+        loadNextPage()
     }
 
-    fun loadAnimeList() {
+    fun loadNextPage() {
+        if (isLoading || endReached) return
+
+        isLoading = true
+        if (cachedList.isEmpty()) _uiState.value = UiState.Loading
+
         viewModelScope.launch {
-            uiState = UiState.Loading
             try {
-                val data = useCase.exec()
-                uiState = UiState.Success(data)
+                val newItems = useCase.exec(currentPage, limit = 10)
+                if (newItems.isEmpty()) {
+                    endReached = true
+                } else {
+                    cachedList.addAll(newItems)
+                    _uiState.value = UiState.Success(cachedList.toList())
+                    currentPage++
+                }
             } catch (e: Exception) {
-                uiState = UiState.Error(e.message ?: "Неизвестная ошибка")
+                _uiState.value = UiState.Error(e.message ?: "Неизвестная ошибка")
+            } finally {
+                isLoading = false
             }
         }
     }
+
+    fun retry() {
+        _uiState.value = UiState.Loading
+        loadNextPage()
+    }
 }
+
 

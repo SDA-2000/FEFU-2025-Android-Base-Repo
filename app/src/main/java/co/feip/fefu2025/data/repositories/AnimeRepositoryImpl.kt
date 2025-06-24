@@ -1,156 +1,37 @@
 package co.feip.fefu2025.data.repositories
 
-import co.feip.fefu2025.R
+import co.feip.fefu2025.data.remote.api.AnimeApi
+import co.feip.fefu2025.data.remote.mapper.toDomain
 import co.feip.fefu2025.domain.entities.Anime
 import co.feip.fefu2025.domain.repositories.AnimeRepository
 import kotlinx.coroutines.delay
-import java.io.IOException
 import javax.inject.Inject
 
-class AnimeRepositoryImpl @Inject constructor() : AnimeRepository  {
-    private val animeList = listOf(
-        Anime(1,
-            "Ковбой Бибоп",
-            listOf("Приключения", "Драма", "Комедия"),
-            1998,
-            R.drawable.cowboy_bebop,
-            "",
-            25,
-            mapOf(1 to 10, 2 to 5, 3 to 6, 4 to 8, 5 to 9, 6 to 5, 7 to 12, 8 to 22, 9 to 29, 10 to 38),
-            listOf(2, 3 , 4)
-
-        ),
-
-        Anime(2,
-            "Берсерк",
-            listOf("Приключения", "Сейнен", "Экшен"),
-            1998,
-            R.drawable.berserk,
-            "",
-            25,
-            mapOf(1 to 10, 2 to 5, 3 to 6, 4 to 8, 5 to 9, 6 to 5, 7 to 12, 8 to 22, 9 to 29, 10 to 38),
-            listOf(1, 3, 4, 6)
-        ),
-
-        Anime(3,
-            "Монстр",
-            listOf("Детектив", "Драма", "Триллер"),
-            2004,
-            R.drawable.monster,
-            "",
-            56,
-            mapOf(1 to 10, 2 to 5, 3 to 6, 4 to 8, 5 to 9, 6 to 5, 7 to 12, 8 to 22, 9 to 29, 10 to 38),
-            listOf(1, 2, 4, 6)
-        ),
-
-        Anime(4,
-            "Хеллсинг OVA",
-            listOf("Экшен", "Сейнен"),
-            2006,
-            R.drawable.hellsing_ova,
-            "",
-            10,
-            mapOf(1 to 10, 2 to 5, 3 to 6, 4 to 8, 5 to 9, 6 to 5, 7 to 12, 8 to 22, 9 to 29, 10 to 38),
-            listOf(1, 2, 3, 6)
-        ),
-
-        Anime(
-            5,
-            "Ван Пис",
-            listOf("Приключения", "Сёнен", "Комедия"),
-            1999,
-            R.drawable.one_piece,
-            "",
-            1016,
-            mapOf(1 to 10, 2 to 5, 3 to 6, 4 to 8, 5 to 9, 6 to 5, 7 to 12, 8 to 22, 9 to 29, 10 to 38),
-            listOf(7, 8 , 10)
-        ),
-
-        Anime(
-          6,
-            "Пираты \" Чёрной Лагуны \"",
-            listOf("Экшен", "Сейнен"),
-            2006,
-            R.drawable.black_lagoon,
-            "",
-            24,
-            mapOf(1 to 10, 2 to 5, 3 to 6, 4 to 8, 5 to 9, 6 to 5, 7 to 12, 8 to 22, 9 to 29, 10 to 38),
-            listOf(1, 2, 3, 4, 7)
-        ),
-
-        Anime(
-            7,
-            "Триган", listOf("Приключения", "Драма", "Комедия"),
-            1998,
-            R.drawable.trigun,
-            "",
-            25,
-            mapOf(1 to 10, 2 to 5, 3 to 6, 4 to 8, 5 to 9, 6 to 5, 7 to 12, 8 to 22, 9 to 29, 10 to 38),
-            listOf(1, 2, 3, 4, 6)
-        ),
-
-        Anime(
-            8,
-            "Покемоны", listOf("Приключения", "Сёнен"),
-            1997,
-            R.drawable.pokemon,
-            "",
-
-            745,
-            mapOf(1 to 10, 2 to 5, 3 to 6, 4 to 8, 5 to 9, 6 to 5, 7 to 12, 8 to 22, 9 to 29, 10 to 38),
-            listOf(5, 10)
-        ),
-
-        Anime(
-            9,
-            "Психо-пасспорт",
-            listOf("Мистика", "Драма", "Детектив"),
-            2012,
-            R.drawable.psycho_pass,
-            "",
-            26,
-            mapOf(1 to 10, 2 to 5, 3 to 6, 4 to 8, 5 to 9, 6 to 5, 7 to 12, 8 to 22, 9 to 29, 10 to 38),
-            listOf(1, 3, 10)
-        ),
-
-        Anime(
-            10,
-            "Детектив Конан",
-            listOf("Детектив", "Комедия"),
-            1996,
-            R.drawable.conan_detective,
-            "",
-            1078,
-            mapOf(1 to 10, 2 to 5, 3 to 6, 4 to 8, 5 to 9, 6 to 5, 7 to 12, 8 to 22, 9 to 29, 10 to 38),
-            listOf(5, 9)
-
-        )
-
-    )
-
+class AnimeRepositoryImpl @Inject constructor( private val api: AnimeApi) : AnimeRepository  {
 
     override suspend fun GetAnimeList(): List<Anime> {
-        delay(3000)
-        if ((0..3).random() == 0) throw IOException("Ошибка загрузки списка")
-        return animeList
+        return api.getAnimeList().data.map {it.toDomain()}
     }
 
-    override suspend fun GetAnimeById(id: Int): Anime? {
-        delay(250)
-        if ((0..3).random() == 0) throw IOException("Ошибка загрузки аниме")
-        return animeList.find { it.id == id }
+    override suspend fun GetAnimeList(page: Int, limit: Int): List<Anime> {
+        return api.getAnimeList(page = page, limit = limit).data.map { it.toDomain()}
     }
 
-    override suspend fun GetAnimeByIdFast(id: Int): Anime? {
-        if ((0..3).random() == 0) throw IOException("Ошибка загрузки аниме")
-        return animeList.find { it.id == id }
+    override suspend fun GetAnimeById(id: Int?): Anime {
+        val recommendations = getRecommendations(id)
+        return api.getAnimeById(id).data.toDomain(recommendations)
     }
 
-    override suspend fun searchAnimeByName(query: String): List<Anime> {
+    override suspend fun GetRecommendationById(id: Int?): Anime {
         delay(1000)
-        if (query.isBlank()) return emptyList()
-        return animeList.filter {
-            it.name.contains(query, ignoreCase = true)
-        }
+        return api.getAnimeById(id).data.toDomain(emptyList())
+    }
+
+    override suspend fun searchAnimeByName(query: String, page: Int, limit: Int): List<Anime> {
+        return api.getAnimeList(query, page, limit).data.map {it.toDomain()}
+    }
+
+    override suspend fun getRecommendations(id: Int?): List<Int> {
+        return api.getRecommendations(id).data.map { it.entry.id }
     }
 }

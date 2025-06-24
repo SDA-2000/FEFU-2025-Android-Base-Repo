@@ -10,24 +10,25 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import co.feip.fefu2025.R
-import co.feip.fefu2025.presentation.details.utils.isDrawableResourceValid
+import co.feip.fefu2025.domain.entities.Anime
 import co.feip.fefu2025.presentation.recomendations.RecomendationsScreenViewModel
 import co.feip.fefu2025.presentation.state.UiState
-
+import androidx.compose.runtime.getValue
 
 @Composable
 fun MainScreenView(
@@ -35,8 +36,7 @@ fun MainScreenView(
     navController: NavController,
     recommendationsScreenViewModel: RecomendationsScreenViewModel
 ) {
-    val state = viewModel.uiState
-    val context = LocalContext.current
+    val state by viewModel.uiState
 
     Column(
         modifier = Modifier
@@ -50,12 +50,9 @@ fun MainScreenView(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp)
-                .clickable {
-                    navController.navigate("search")
-                },
+                .clickable { navController.navigate("search?clearSearch=true") },
             enabled = false
         )
-
 
         when (state) {
             is UiState.Loading -> {
@@ -65,44 +62,53 @@ fun MainScreenView(
             }
 
             is UiState.Error -> {
+                val message = (state as UiState.Error).message
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("Ошибка: ${state.message}")
+                        Text("Ошибка: $message")
                         Spacer(modifier = Modifier.height(8.dp))
-                        Button(onClick = { viewModel.loadAnimeList() }) {
+                        Button(onClick = { viewModel.retry() }) {
                             Text("Повторить")
                         }
                     }
                 }
             }
 
-            is UiState.Success -> {
+            is UiState.Success<List<Anime>> -> {
+                val list = (state as UiState.Success<List<Anime>>).data
+
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(4.dp)
                 ) {
-                    items(state.data) { anime ->
-                        val validImageResId = if (isDrawableResourceValid(context, anime.ImageResId)) {
-                            anime.ImageResId
-                        } else {
-                            R.drawable.here
-                        }
-
+                    itemsIndexed(list) { index, anime ->
                         AnimeCardView(
                             id = anime.id,
                             title = anime.name,
                             genres = anime.genres,
-                            imageResId = validImageResId,
-                            viewers = anime.grade,
-                            modifier = Modifier,
+                            imageUrl = anime.imageUrl,
+                            viewers = anime.score.toString(),
                             onClick = {
                                 navController.navigate("anime/${anime.id}")
                             }
                         )
+
+                        if (index >= list.size - 4) {
+                            LaunchedEffect(key1 = index) {
+                                viewModel.loadNextPage()
+                            }
+                        }
+                    }
+
+                    item(span = { GridItemSpan(2) }) {
+                        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator(modifier = Modifier.padding(8.dp))
+                        }
                     }
                 }
             }
         }
     }
 }
+

@@ -1,6 +1,7 @@
 package co.feip.fefu2025.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -12,7 +13,7 @@ import co.feip.fefu2025.presentation.details.AnimeScreenViewModel
 import co.feip.fefu2025.presentation.main.MainScreenView
 import co.feip.fefu2025.presentation.main.MainScreenViewModel
 import co.feip.fefu2025.presentation.recomendations.RecomendationsScreenViewModel
-import co.feip.fefu2025.presentation.recommendations.RecommendationsScreenView
+import co.feip.fefu2025.presentation.recomendations.RecommendationsScreenView
 import co.feip.fefu2025.presentation.search.SearchScreenView
 import co.feip.fefu2025.presentation.search.SearchScreenViewModel
 
@@ -33,21 +34,29 @@ fun MainNavigation(
         }
 
         composable(
-            route = "anime/{animeId}",
-            arguments = listOf(navArgument("animeId") { type = NavType.IntType }),
-            deepLinks = listOf(navDeepLink { uriPattern = "mysuperapp://anime/{animeId}" })
+            route = "anime/{id}",
+            arguments = listOf(navArgument("id") { type = NavType.IntType }),
+            deepLinks = listOf(navDeepLink { uriPattern = "mysuperapp://anime/{id}" })
         ) { backStackEntry ->
-            val animeId = backStackEntry.arguments?.getInt("animeId")
-            if (animeId != null) {
-                AnimeScreenView(animeScreenViewModel, animeId, navController, recommendationsScreenViewModel)
+            val animeId = backStackEntry.arguments?.getInt("id")
+            if (animeId != -1) {
+                AnimeScreenView(animeScreenViewModel,
+                    animeId, navController, recommendationsScreenViewModel)
             }
         }
 
-        composable("recommendations") {
-            RecommendationsScreenView(
-                navController = navController,
-                sharedViewModel = recommendationsScreenViewModel
-            )
+        composable("recommendations/{animeId}") { backStackEntry ->
+            val animeId = backStackEntry.arguments?.getString("animeId")?.toIntOrNull()
+
+            if (animeId != null) {
+                RecommendationsScreenView(
+                    navController = navController,
+                    sharedViewModel = recommendationsScreenViewModel,
+                    animeId = animeId
+                )
+            } else {
+                navController.popBackStack()
+            }
         }
 
         composable("search") {
